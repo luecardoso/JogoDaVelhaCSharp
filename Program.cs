@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using System.Net.Http.Headers;
+using System.Xml.Linq;
 
 namespace Desafio_I
 {
@@ -7,6 +8,9 @@ namespace Desafio_I
         static void Main(string[] args)
         {
             //JOGO DA VELHA
+            string[,] matriz = new string[3, 3];
+
+            
             menu();    
         }
         
@@ -60,7 +64,7 @@ namespace Desafio_I
             Console.WriteLine("+------------------------------+");
             Console.Clear();
             int sorteio = sorteioJogador();
-            int linha, coluna;
+            int linha, coluna, pontuacaoP1 =0, pontuacaoP2 =0;
             string elemento;
             Console.Clear();
             bool venceu = false, posicaoOcupada = false;
@@ -79,7 +83,14 @@ namespace Desafio_I
                         linha = posicao();
                         Console.Write("Coluna ");
                         coluna = posicao();
+                        
                         posicaoOcupada = verificarPosicao(matriz, linha, coluna, elemento);
+                        venceu = verificarLinha(matriz, elemento);
+                        if (venceu)
+                        {
+                            tabuleiro(matriz);
+                            break;
+                        }
                         if (posicaoOcupada)
                         {
                             sorteio = 1;
@@ -107,6 +118,12 @@ namespace Desafio_I
                         Console.Write("Coluna ");
                         coluna = posicao();
                         posicaoOcupada = verificarPosicao(matriz, linha, coluna, elemento);
+                        venceu = verificarLinha(matriz, elemento);
+                        if (venceu)
+                        {
+                            tabuleiro(matriz);
+                            break;
+                        }
                         if (posicaoOcupada)
                         {
                             sorteio = 0;
@@ -122,8 +139,23 @@ namespace Desafio_I
                     
                 }
                 //escolherPosicao(matriz, linha, coluna, elemento, sorteio);
-                //tabuleiro(matriz);
+                //
             } while (!venceu);
+            if (sorteio == 0)
+            {
+                pontuacaoP1++;
+                Console.WriteLine("+--------------------------------------+");
+                Console.WriteLine("        VITÓRIA DE " + player2.ToUpper());
+                Console.WriteLine("+--------------------------------------+");
+            }
+            else
+            {
+                pontuacaoP2++;
+                Console.WriteLine("+--------------------------------------+");
+                Console.WriteLine("        VITÓRIA DE " + player2.ToUpper());
+                Console.WriteLine("+--------------------------------------+");
+            }
+            
         }
         static void tabuleiro(string[,] matriz)
         {
@@ -165,72 +197,6 @@ namespace Desafio_I
         {
 
         }
-        /*
-        static void matrizTabuleiro(int posicao)
-        {
-            string[,] matriz = new string[3, 3];
-            montarTabuleiro();
-            for (int i = 0; i< matriz.GetLength(0); i++)
-            {
-                for (int j =0; j < matriz.GetLength(1); j++)
-                {
-                    matriz[i, j] = " " + posicao + " ";
-                    Console.Write(matriz[i, j]);
-                }
-                Console.WriteLine("");
-            }
-            Console.WriteLine("");
-        }
-        */
-        /*
-        static void montarTabuleiro(string[,] matriz)
-        {
-            Console.WriteLine("");
-            for (int i = 0; i < matriz.GetLength(0); i++)
-            {
-                for (int j = 0; j < matriz.GetLength(1); j++)
-                {
-
-                    if (j == matriz.GetLength(1) - 1)
-                    {
-                        break;
-                    }
-                    Console.Write(matriz[i, j] + "|");
-                }
-                if (i == matriz.GetLength(0) - 1)
-                {
-                    break;
-                }
-                Console.WriteLine("\n---+---+---");
-            }
-            Console.WriteLine("");
-        }
-        */
-        /*
-        static void escolherPosicao(string[,] matriz, int linha, int coluna, string elemento, int jogador)
-        {
-            Console.WriteLine("");
-            linha--;
-            coluna--;
-            for (int i = 0; i < matriz.GetLength(0); i++)
-            {
-                for (int j = 0; j < matriz.GetLength(1); j++)
-                {
-                    if (matriz[linha, coluna] != null)
-                    {
-                        Console.WriteLine(" posição já preenchida   ");
-                        break;
-                    }
-                    else
-                    {
-                        matriz[linha, coluna] = elemento;
-                    }
-
-                }
-            }
-            Console.WriteLine("");
-        }
-        */
         static bool verificarPosicao(string[,] matriz, int linha, int coluna, string elemento)
         {
             linha--;
@@ -239,6 +205,7 @@ namespace Desafio_I
             {
                 for (int j = 0; j < matriz.GetLength(1); j++)
                 {
+                    verificarDiagonalPrincipal(matriz,elemento);
                     if (matriz[linha, coluna] == null)
                     {
                         matriz[linha, coluna] = elemento;
@@ -256,21 +223,145 @@ namespace Desafio_I
             return false;
         }
 
-        static void verificarLinha()
+        static bool verificarLinha(string[,] matriz, string elemento)
         {
+            
+            string caractere;
+            int pontos = 0;
+            bool ganhou = false;
+            for (int i = 0; i < matriz.GetLength(0); i++)
+            {
+                for (int j = 0; j < matriz.GetLength(1); j++)
+                {
 
+                    caractere = matriz[i, j];
+                    if (caractere == elemento)
+                    {
+                        pontos++;
+                    }
+                }
+                if (pontos == 3)
+                {
+                    ganhou = true;
+                    return ganhou;
+                }
+                else
+                {
+                    pontos = 0;
+                }
+                
+            }
+            return ganhou;
         }
-        static void verificarColuna()
+        static bool verificarColuna(string[,] matriz, string elemento)
         {
-
+            string caractere;
+            int linha1 = 0, linha2 = 0,linha3 = 0;
+            bool ganhou = false;
+            for (int i = 0; i < matriz.GetLength(0); i++)
+            {
+                for (int j = 0; j < matriz.GetLength(1); j++)
+                {
+                    if (j == 0)
+                    {
+                        caractere = matriz[i, j];
+                        if (caractere == elemento)
+                        {
+                            linha1++;
+                        }
+                    }
+                    if (j == 1)
+                    {
+                        caractere = matriz[i, j];
+                        if (caractere == elemento)
+                        {
+                            linha2++;
+                        }
+                    }
+                    if (j == 2)
+                    {
+                        caractere = matriz[i, j];
+                        if (caractere == elemento)
+                        {
+                            linha3++;
+                        }
+                    }
+                }
+            }
+            if (linha1 == 3)
+            {
+                ganhou = true;
+                return ganhou;
+            }
+            if (linha2 == 3)
+            {
+                ganhou = true;
+                return ganhou;
+            }
+            if (linha3 == 3)
+            {
+                ganhou = true;
+                return ganhou;
+            }
+            return ganhou;
         }
-        static void verificarDiagonalPrincipal()
+        static bool verificarDiagonalPrincipal(string[,] matriz, string elemento)
         {
-
+            string caractere;
+            int pontos = 0;
+            bool ganhou = false;
+            for (int i = 0; i < matriz.GetLength(0); i++)
+            {
+                for (int j = 0; j < matriz.GetLength(1); j++)
+                {
+                    if (i == j)
+                    {
+                        caractere = matriz[i, j];
+                        if (caractere == elemento)
+                        {
+                            pontos++;
+                        }
+                    }
+                }
+            }
+            if (pontos == 3)
+            {
+                ganhou = true;
+                return ganhou;
+            }
+            else
+            {
+                return ganhou;
+            }
         }
-        static void verificarDiagonalSecundaria()
+        static bool verificarDiagonalSecundaria(string[,] matriz, string elemento)
         {
-
+            string caractere;
+            int pontos = 0;
+            bool ganhou = false;
+            for (int i = 0; i < matriz.GetLength(0); i++)
+            {
+                for (int j = 0; j < matriz.GetLength(1); j++)
+                {
+                    if (i + j == matriz.GetLength(0) - 1)
+                    {
+                        caractere = matriz[i, j];
+                        if (caractere == elemento)
+                        {
+                            pontos++;
+                        }
+                    }
+                }
+            }
+            if (pontos == 3)
+            {
+                ganhou = true;
+                return ganhou;
+            }
+            else
+            {
+                return ganhou;
+            }
         }
     }
 }
