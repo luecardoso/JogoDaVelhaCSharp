@@ -1,35 +1,36 @@
-﻿namespace Desafio_I
+﻿using System.Xml.Linq;
+
+namespace Desafio_I
 {
     internal class Program
     {
         static void Main(string[] args)
         {
             //JOGO DA VELHA
-            //menu();
-            //tabuleiro();
-            matrizTabuleiro(0);
-
-            
+            menu();    
         }
         
         static void menu()
         {
-            Console.WriteLine("##########################");
-            Console.WriteLine("##### JOGO DA VELHA ######");
-            Console.WriteLine("##########################");
-            Console.WriteLine("# 1 - Player vs Player   #");
-            Console.WriteLine("# 2 - Player vs Máquina  #");
-            Console.WriteLine("##########################");
-            Console.Write("SELECIONE UMA OPÇÃO: ");
+            Console.WriteLine("+------------------------------+");
+            Console.WriteLine("|       #JOGO DA VELHA#        |");
+            Console.WriteLine("+------------------------------+");
+            Console.WriteLine("| 1 - Player vs Player         |");
+            Console.WriteLine("| 2 - Player vs Máquina        |");
+            Console.WriteLine("+------------------------------+");
+            Console.Write("| SELECIONE UMA OPÇÃO: ");
             string escolha = Console.ReadLine();
+            string[,] matriz = new string[3, 3];
+            
+            Console.WriteLine("+------------------------------+");
 
             switch (escolha)
             {
                 case "1":
-                    PlayerVsPlayer();
+                    PlayerVsPlayer(matriz);
                     break;
                 case "2":
-                    PlayerVsMaquina();
+                    PlayerVsMaquina(matriz);
                     break;
                 default:
                     Console.WriteLine("Nenhuma opção escolhida!");
@@ -39,43 +40,102 @@
 
         static string nomeJogador()
         {
-            Console.Write("Digite seu nome: ");
+            Console.Write("| Digite seu nome: ");
             return Console.ReadLine();
         }
-        static void PlayerVsPlayer()
+        static void PlayerVsPlayer(string[,] matriz)
         {
             Console.Clear();
-            Console.WriteLine("##############################");
-            Console.WriteLine("##### PLAYER VS. PLAYER ######");
-            Console.WriteLine("##############################");
-            Console.WriteLine("PLAYER 1 = X ");
-            Console.WriteLine("PLAYER 2 = O ");
-            Console.Write("PLAYER 1 ");
+            Console.WriteLine("+------------------------------+");
+            Console.WriteLine("|       PLAYER VS. PLAYER      |");
+            Console.WriteLine("+------------------------------+");
+            Console.WriteLine("| PLAYER 1 = X                 |");
+            Console.WriteLine("| PLAYER 2 = O                 |");
+            Console.WriteLine("+------------------------------+");
+            Console.WriteLine("| PLAYER 1                     |");
             string player1 = nomeJogador();
-            Console.Write("PLAYER 2 ");
+            Console.WriteLine("+------------------------------+");
+            Console.WriteLine("| PLAYER 2 ");
             string player2 = nomeJogador();
+            Console.WriteLine("+------------------------------+");
             Console.Clear();
             int sorteio = sorteioJogador();
-            if (sorteio == 0)
+            int linha, coluna;
+            string elemento;
+            Console.Clear();
+            bool venceu = false;
+            
+            do
             {
-                Console.WriteLine(player1+" Começa");
-            }
-            else
-            {
-                Console.WriteLine(player2+"  Começa");
-            }
+                if (sorteio == 0)
+                {
+                    Console.WriteLine("Vez de "+player1);
+                    Console.WriteLine("X");
+                    elemento = "X";
+                    Console.Write("Linha ");
+                    linha = posicao();
+                    Console.Write("Coluna ");
+                    coluna = posicao();
+                    sorteio = 1;
+                    //tabuleiro(matriz);
+                
+                }
+                else
+                {
+                    Console.WriteLine("Vez de " + player2);
+                    Console.WriteLine("O");
+                    elemento = "O";
+                    Console.Write("Linha ");
+                    linha = posicao();
+                    Console.Write("Coluna ");
+                    coluna = posicao();
+                    sorteio = 0;
+                    //tabuleiro(matriz);
+                }
+                escolherPosicao(matriz, linha, coluna, elemento);
+                tabuleiro(matriz);
+            } while (!venceu);
         }
+        static void tabuleiro(string[,] matriz)
+        {
+            Console.WriteLine("");
+            Console.WriteLine(" "+matriz[0, 0] + " | " + matriz[0, 1] + " | " + matriz[0, 2]);
+            Console.WriteLine("---+---+---");
+            Console.WriteLine(" "+matriz[1, 0] + " | " + matriz[1, 1] + " | " + matriz[1, 2]);
+            Console.WriteLine("---+---+---");
+            Console.WriteLine(" " + matriz[2, 0] + " | " + matriz[2, 1] + " | " + matriz[2, 2]);
+            Console.WriteLine("");
 
+        }
         static int sorteioJogador()
         {
             Console.WriteLine("Sorteando...");
             return new Random().Next(0, 2);
         }
-        static void PlayerVsMaquina()
+        static int posicao()
+        {
+            int x;
+            do
+            {
+                Console.Write(" jogada: ");
+                x = int.Parse(Console.ReadLine());
+            } while (x < 1 || x > 3);
+
+            return x;
+        }
+        static void PlayerVsMaquina(string[,] matriz)
+        {
+            //ppontuacao maquina, pontuacao jogador
+            Console.Clear();
+            Console.WriteLine("+------------------------------+");
+            Console.WriteLine("|      PLAYER VS. MÁQUINA      |");
+            Console.WriteLine("+------------------------------+");
+        }
+        static void posicaoPreenchida(string[,] matriz)
         {
 
         }
-
+        /*
         static void matrizTabuleiro(int posicao)
         {
             string[,] matriz = new string[3, 3];
@@ -91,11 +151,11 @@
             }
             Console.WriteLine("");
         }
-
-        static void montarTabuleiro()
+        */
+        /*
+        static void montarTabuleiro(string[,] matriz)
         {
             Console.WriteLine("");
-            string[,] matriz = new string[3, 3];
             for (int i = 0; i < matriz.GetLength(0); i++)
             {
                 for (int j = 0; j < matriz.GetLength(1); j++)
@@ -112,6 +172,31 @@
                     break;
                 }
                 Console.WriteLine("\n---+---+---");
+            }
+            Console.WriteLine("");
+        }
+        */
+
+        static void escolherPosicao(string[,] matriz, int linha, int coluna, string elemento)
+        {
+            Console.WriteLine("");
+            linha--;
+            coluna--;
+            for (int i = 0; i < matriz.GetLength(0); i++)
+            {
+                for (int j = 0; j < matriz.GetLength(1); j++)
+                {
+                    if (matriz[i, j] != null)
+                    {
+                        Console.WriteLine(" posição já preenchida   ");
+                        break;
+                    }
+                    else
+                    {
+                        matriz[linha, coluna] = elemento;
+                    }
+
+                }
             }
             Console.WriteLine("");
         }
