@@ -16,8 +16,8 @@ namespace Desafio_I
             Console.WriteLine("+------------------------------+");
             Console.WriteLine("|       #JOGO DA VELHA#        |");
             Console.WriteLine("+------------------------------+");
-            Console.WriteLine("| 1 - Player vs Player         |");
-            Console.WriteLine("| 2 - Player vs Máquina        |");
+            Console.WriteLine("| 1 - PLAYER VS PLAYER         |");
+            Console.WriteLine("| 2 - PLAYER VS COMPUTADOR     |");
             Console.WriteLine("+------------------------------+");
             Console.Write("| SELECIONE UMA OPÇÃO: ");
             string escolha = Console.ReadLine();
@@ -158,8 +158,6 @@ namespace Desafio_I
                         } while (posicaoOcupada);
 
                     }
-                    //escolherPosicao(matriz, linha, coluna, elemento, sorteio);
-                    //
                 } while (!venceu);
                 if (sorteio == 0)
                 {
@@ -424,11 +422,164 @@ namespace Desafio_I
 
         static void PlayerVsMaquina(string[,] matriz)
         {
-            //ppontuacao maquina, pontuacao jogador
             Console.Clear();
             Console.WriteLine("+------------------------------+");
-            Console.WriteLine("|      PLAYER VS. MÁQUINA      |");
+            Console.WriteLine("|     PLAYER VS. COMPUTADOR    |");
             Console.WriteLine("+------------------------------+");
+            Console.WriteLine("| COMPUTADOR =  X              |");
+            Console.WriteLine("| VOCÊ       =  O              |");
+            Console.WriteLine("+------------------------------+");
+            int linha, coluna, pontuacaoPC = 0, pontuacaoP1 = 0, pontuacaoEmpate = 0;
+            Console.Clear();
+            bool venceu = false, posicaoOcupada = false, empate = false;
+            string denovo = "", elemento ="";
+            bool[] vetor = new bool[4];
+            int sorteio = 0;
+
+
+            while (denovo.ToUpper() != "N")
+            {
+
+                tabuleiroInicial(matriz);
+                do
+                {
+                    vetor[0] = verificarLinha(matriz, elemento);
+                    vetor[1] = verificarColuna(matriz, elemento);
+                    vetor[2] = verificarDiagonalPrincipal(matriz, elemento);
+                    vetor[3] = verificarDiagonalSecundaria(matriz, elemento);
+                for (int i = 0; i < vetor.Length; i++)
+                {
+                    if (vetor[i] == true)
+                    {
+                        venceu = true;
+                        break;
+                    }
+                }
+
+                if (venceu)
+                {
+                    tabuleiro(matriz);
+                    break;
+                }
+                empate = verificarEmpate(matriz, elemento);
+                if (empate)
+                {
+                    tabuleiro(matriz);
+                    sorteio = -1;
+
+                    break;
+                }
+                tabuleiro(matriz);
+                    if (sorteio == 0)
+                    {
+                        do
+                        {
+                            Console.WriteLine("+---------------X--------------+");
+                            Console.WriteLine("|       Vez do Computador      |");
+                            Console.WriteLine("+------------------------------+");
+                            elemento = "X";
+                            linha = new Random().Next(0, 3);
+                            coluna = new Random().Next(0, 3);
+                            posicaoOcupada = sortearJogadaPC(matriz, linha, coluna, elemento);
+                            if (posicaoOcupada)
+                            {
+                                sorteio = 1;
+                                posicaoOcupada = false;
+                            }
+                            else
+                            {
+                                sorteio = 0;
+                                posicaoOcupada = true;
+                            }
+                        } while (posicaoOcupada);
+
+
+
+                    }
+                    else
+                    {
+                        do
+                        {
+                            Console.WriteLine("+---------------O--------------+");
+                            Console.WriteLine("|           SUA VEZ            |");
+                            Console.WriteLine("+------------------------------+");
+                            elemento = "O";
+                            Console.Write("| Linha ");
+                            linha = posicao();
+                            Console.Write("| Coluna ");
+                            coluna = posicao();
+                            posicaoOcupada = verificarPosicao(matriz, linha, coluna, elemento);
+                            if (posicaoOcupada)
+                            {
+                            sorteio = 0;
+                            posicaoOcupada = false;
+                            }
+                            else
+                            {
+                            sorteio = 1;
+                            posicaoOcupada = true;
+                            }
+                        } while (posicaoOcupada);
+
+                    }
+
+                } while (!venceu);
+                if (sorteio == 0)
+                {
+                    pontuacaoPC++;
+                    Console.WriteLine("+------------------- X ----------------+");
+                    Console.WriteLine("        VITÓRIA DO COMPUTADOR          |");
+                    Console.WriteLine("+--------------------------------------+");
+                }
+                else if (sorteio == 1)
+                {
+                    pontuacaoP1++;
+                    Console.WriteLine("+------------------- O ----------------+");
+                    Console.WriteLine("               VOCÊ VENCEU!            |");
+                    Console.WriteLine("+--------------------------------------+");
+                }
+                if (empate)
+                {
+                    pontuacaoEmpate++;
+                    Console.WriteLine("+------------------------------+");
+                    Console.WriteLine("|            EMPATE            |");
+                    Console.WriteLine("+------------------------------+");
+                }
+                Console.Write("| Deseja jogar novamente? S/N  ");
+            denovo = Console.ReadLine();
+            venceu = false;
+        }
+        Console.WriteLine("+------------------------------+");
+            Console.WriteLine("|            PLACAR            |");
+            Console.WriteLine("+------------------------------+");
+            Console.WriteLine("| COMPUTADOR = " + pontuacaoPC);
+            Console.WriteLine("| JOGADOR = " + pontuacaoP1);
+            Console.WriteLine("| EMPATES: " + pontuacaoEmpate);
+            Console.WriteLine("+------------------------------+");
+
+        }
+
+        static bool sortearJogadaPC(string[,] matriz, int linha, int coluna,string elemento)
+        {
+            
+            for (int i = 0; i < matriz.GetLength(0); i++)
+            {
+                for (int j = 0; j < matriz.GetLength(1); j++)
+                {
+                    if (matriz[linha, coluna] == null)
+                    {
+                        matriz[linha, coluna] = elemento;
+                        return true;
+                        
+                    }
+                    else
+                    {
+                        break;
+                    }
+
+                }
+            }
+            return false;
         }
     }
 }
