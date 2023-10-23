@@ -61,16 +61,45 @@ namespace Desafio_I
             Console.WriteLine("+------------------------------+");
             Console.Clear();
             int sorteio = sorteioJogador();
-            int linha, coluna, pontuacaoP1 =0, pontuacaoP2 =0;
-            string elemento;
+            int linha, coluna, pontuacaoP1 =0, pontuacaoP2 =0, pontuacaoEmpate = 0;
+            string elemento= "";
             Console.Clear();
             bool venceu = false, posicaoOcupada = false, empate = false;
             string denovo = "";
+            bool[] vetor = new bool[4];
+            
+
             while (denovo.ToUpper() != "N")
             {
                 tabuleiroInicial(matriz);
                 do
                 {
+                    vetor[0] = verificarLinha(matriz, elemento);
+                    vetor[1] = verificarColuna(matriz, elemento);
+                    vetor[2] = verificarDiagonalPrincipal(matriz, elemento);
+                    vetor[3] = verificarDiagonalSecundaria(matriz, elemento);
+                    for (int i = 0; i < vetor.Length; i++)
+                    {
+                        if (vetor[i] == true)
+                        {
+                            venceu = true;
+                            break;
+                        }
+                    }
+
+                    if (venceu)
+                    {
+                        tabuleiro(matriz);
+                        break;
+                    }
+                    empate = verificarEmpate(matriz, elemento);
+                    if (empate)
+                    {
+                        tabuleiro(matriz);
+                        sorteio = -1;
+
+                        break;
+                    }
                     tabuleiro(matriz);
                     if (sorteio == 0)
                     {
@@ -86,18 +115,7 @@ namespace Desafio_I
                             coluna = posicao();
 
                             posicaoOcupada = verificarPosicao(matriz, linha, coluna, elemento);
-                            venceu = verificarLinha(matriz, elemento);
-                            if (venceu)
-                            {
-                                tabuleiro(matriz);
-                                break;
-                            }
-                            empate = verificarEmpate(matriz, elemento);
-                            if (empate)
-                            {
-                                sorteio = -1;
-                                break;
-                            }
+
                             if (posicaoOcupada)
                             {
                                 sorteio = 1;
@@ -126,18 +144,6 @@ namespace Desafio_I
                             Console.Write("| Coluna ");
                             coluna = posicao();
                             posicaoOcupada = verificarPosicao(matriz, linha, coluna, elemento);
-                            venceu = verificarLinha(matriz, elemento);
-                            if (venceu)
-                            {
-                                tabuleiro(matriz);
-                                break;
-                            }
-                            empate = verificarEmpate(matriz, elemento);
-                            if (empate)
-                            {
-                                sorteio = -1;
-                                break;
-                            }
                             if (posicaoOcupada)
                             {
                                 sorteio = 0;
@@ -158,28 +164,34 @@ namespace Desafio_I
                 if (sorteio == 0)
                 {
                     pontuacaoP1++;
-                    Console.WriteLine("+--------------------------------------+");
+                    Console.WriteLine("+------------------- X ----------------+");
                     Console.WriteLine("        VITÓRIA DE " + player2.ToUpper());
                     Console.WriteLine("+--------------------------------------+");
                 }
                 else if (sorteio == 1)
                 {
                     pontuacaoP2++;
-                    Console.WriteLine("+--------------------------------------+");
+                    Console.WriteLine("+------------------- O ----------------+");
                     Console.WriteLine("        VITÓRIA DE " + player2.ToUpper());
                     Console.WriteLine("+--------------------------------------+");
                 }
                 if (empate)
                 {
+                    pontuacaoEmpate++;
                     Console.WriteLine("+------------------------------+");
                     Console.WriteLine("|            EMPATE            |");
                     Console.WriteLine("+------------------------------+");
                 }
                 Console.Write("| Deseja jogar novamente? S/N  ");
                 denovo = Console.ReadLine();
+                venceu = false;
             }
-            Console.WriteLine("+-----------PLACAR-------------+");
-            Console.WriteLine(player1+" = "+pontuacaoP1+"   VS "+player2+" = "+pontuacaoP2);
+            Console.WriteLine("+------------------------------+");
+            Console.WriteLine("|            PLACAR            |");
+            Console.WriteLine("+------------------------------+");
+            Console.WriteLine("| "+player1+" = "+pontuacaoP1);
+            Console.WriteLine("| "+player2+" = "+pontuacaoP2);
+            Console.WriteLine("| Empates: "+pontuacaoEmpate);
             Console.WriteLine("+------------------------------+");
 
         }
@@ -225,36 +237,21 @@ namespace Desafio_I
         
         static bool verificarEmpate(string[,] matriz, string elemento)
         {
-            int pontuacao = 0;
+            int pontos = 0;
             for (int i = 0; i < matriz.GetLength(0); i++)
             {
                 for (int j = 0; j < matriz.GetLength(1); j++)
                 {
-                    if (matriz[i,j] != null)
+                    if (matriz[i, j] != null)
                     {
-                        
-                        pontuacao++;
-                        if (i == (matriz.GetLength(0) - 1) && j == (matriz.GetLength(1) - 1))
-                        {
-                            if (pontuacao == 9)
-                            {
-                                
-                                return true;
-                            }
-                        }
-                        
-                        /*
-                        if (verificarColuna(matriz,elemento) == false && verificarLinha(matriz, elemento) == false
-                            && verificarDiagonalPrincipal(matriz, elemento) == false && 
-                            verificarDiagonalSecundaria(matriz, elemento) == false)
-                        {
-                            return true;
-                        }
-                        */
+                        pontos++;
                     }
-                    
                 }
 
+            }
+            if (pontos == 9)
+            {
+                return true;
             }
             return false;
         }
